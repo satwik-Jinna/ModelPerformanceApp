@@ -43,16 +43,45 @@ if os.path.exists(PICKLE_DIR):
         st.write("**Training Accuracy:**", model_info["Training Accuracy"])
         st.write("**Testing Accuracy:**", model_info["Testing Accuracy"])
 
-        # Visualization: Bar chart for training and testing accuracy
+        # Visualization: Enhanced Bar chart for training and testing accuracy
         st.subheader("Model Performance Visualization")
+        training_acc = model_info["Training Accuracy"]
+        testing_acc = model_info["Testing Accuracy"]
+        accuracy_diff = training_acc - testing_acc
+
+        # Create the bar plot
         fig, ax = plt.subplots()
-        ax.bar(
+        bars = ax.bar(
             ["Training Accuracy", "Testing Accuracy"],
-            [model_info["Training Accuracy"], model_info["Testing Accuracy"]],
-            color=["blue", "green"]
+            [training_acc, testing_acc],
+            color=["red", "green"]
         )
         ax.set_ylabel("Accuracy")
         ax.set_title(f"Performance of {model_info['Model']}")
+
+        # Annotate the bars with their values
+        for bar, value in zip(bars, [training_acc, testing_acc]):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height(),
+                f"{value:.4f}",  # Format the value to 4 decimal places
+                ha='center',
+                va='bottom'
+            )
+
+        # Show the difference between training and testing
+        ax.text(
+            0.5,  # Midpoint between the two bars
+            max(training_acc, testing_acc) + 0.01,  # Slightly above the taller bar
+            f"Difference: {accuracy_diff:.4f}",
+            ha='center',
+            va='bottom',
+            fontsize=10,
+            color='red',
+            fontweight='bold'
+        )
+
+        # Display the plot
         st.pyplot(fig)
 else:
     st.error(f"Directory '{PICKLE_DIR}' not found. Please upload the pickle files.")
