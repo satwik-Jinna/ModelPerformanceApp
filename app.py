@@ -4,12 +4,14 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
-# Function to load a pickle file
+# Caching function to load pickle files
+@st.cache_data
 def load_pickle_file(file_path):
     with open(file_path, "rb") as f:
         return pickle.load(f)
 
-# Load all pickle files and display their information
+# Caching function to load all models
+@st.cache_data
 def load_all_models(directory):
     models_data = {}
     for filename in os.listdir(directory):
@@ -60,8 +62,8 @@ st.sidebar.header("Upload Your Dataset")
 uploaded_file = st.sidebar.file_uploader("Upload a CSV file for analysis", type=["csv"])
 
 if uploaded_file is not None:
-    user_data = pd.read_csv(uploaded_file)
-    st.subheader("Uploaded Dataset")
+    user_data = pd.read_csv(uploaded_file).head(100)  # Load only the first 100 rows for optimization
+    st.subheader("Uploaded Dataset (First 100 Rows)")
     st.write(user_data.head())
 
     # Add mock predictions for demonstration
