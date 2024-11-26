@@ -2,6 +2,7 @@ import streamlit as st
 import pickle
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
 
 # Function to load a pickle file
 def load_pickle_file(file_path):
@@ -39,6 +40,18 @@ if os.path.exists(PICKLE_DIR):
         st.subheader(f"Details for: {model_info['Model']}")
         st.write("**Training Accuracy:**", model_info["Training Accuracy"])
         st.write("**Testing Accuracy:**", model_info["Testing Accuracy"])
+
+        # Visualization: Bar chart for training and testing accuracy
+        st.subheader("Model Performance Visualization")
+        fig, ax = plt.subplots()
+        ax.bar(
+            ["Training Accuracy", "Testing Accuracy"],
+            [model_info["Training Accuracy"], model_info["Testing Accuracy"]],
+            color=["blue", "green"]
+        )
+        ax.set_ylabel("Accuracy")
+        ax.set_title(f"Performance of {model_info['Model']}")
+        st.pyplot(fig)
 else:
     st.error(f"Directory '{PICKLE_DIR}' not found. Please upload the pickle files.")
 
@@ -51,7 +64,14 @@ if uploaded_file is not None:
     st.subheader("Uploaded Dataset")
     st.write(user_data.head())
 
-    # Sample feedback for uploaded dataset
-    st.write("You can now apply models to this dataset.")
+    # Add mock predictions for demonstration
+    st.subheader("Mock Predictions")
+    if len(user_data) > 0:
+        st.write("Here is an example of applying a model to the dataset.")
+        mock_predictions = [f"Class {i % 3}" for i in range(len(user_data))]
+        user_data["Predictions"] = mock_predictions
+        st.write(user_data.head())  # Display dataset with mock predictions
+    else:
+        st.warning("The uploaded dataset is empty!")
 else:
     st.info("Upload a dataset to view insights.")
